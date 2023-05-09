@@ -1,0 +1,84 @@
+{
+  "tests": [
+    {
+      "name": "TTR One Route",
+      "setup": "",
+      "run": "python -m unittest tests.ticket_to_ride_tests.TicketToRideTests.test_one_route",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "TTR Long Route",
+      "setup": "",
+      "run": "python -m unittest tests.ticket_to_ride_tests.TicketToRideTests.test_long_route",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "TTR Half Route",
+      "setup": "",
+      "run": "python -m unittest tests.ticket_to_ride_tests.TicketToRideTests.test_half_route",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "TTR Interesting Route",
+      "setup": "",
+      "run": "python -m unittest tests.ticket_to_ride_tests.TicketToRideTests.test_interesting_route",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "KC Bus One Route",
+      "setup": "",
+      "run": "python -m unittest tests.transportation_tests.TransportationTests.test_one_route_kc_bus",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "KC Bus Long Route",
+      "setup": "",
+      "run": "python -m unittest tests.transportation_tests.TransportationTests.test_long_route_kc_bus",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "Chicago Long Route",
+      "setup": "",
+      "run": "python -m unittest tests.transportation_tests.TransportationTests.test_long_route_chicago",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    },
+    {
+      "name": "Road Trip Long Route",
+      "setup": "",
+      "run": "python -m unittest tests.transportation_tests.TransportationTests.test_long_route_road_trip",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 1,
+      "points": 1
+    }
+  ]
+}
