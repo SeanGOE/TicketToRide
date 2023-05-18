@@ -21,3 +21,6 @@ class TicketToRide:
 
             # TODO: Update load_map_data to load the tracks into your graph
             # Use the example for cities above, and open game_city_locations.json to see the fields for "tracks"
+            for item in path_data["tracks"]:
+                edge = Edge()
+                self.nodes[item.city_1]
