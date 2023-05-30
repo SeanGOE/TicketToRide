@@ -25,3 +25,4 @@ class TicketToRide:
             for item in path_data["tracks"]:
 
                 self.path_finder.add_edge(self.path_finder.name_to_ids[item["city_1"]][0], self.path_finder.name_to_ids[item["city_2"]][0], item["distance"])
+                self.path_finder.add_edge(self.path_finder.name_to_ids[item["city_2"]][0], self.path_finder.name_to_ids[item["city_1"]][0], item["distance"])
