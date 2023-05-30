@@ -50,41 +50,40 @@ class PathFinder:
         visited = set()
 
         pri_queue = PriorityQueue()
-
-        start = RouteInfo([(None, self.ids_to_name[start_city_id][0])], [(None, start_city_id)], 0)
         
+        visited.add(start_city_id)
+
         for nodes in self.graph.nodes[start_city_id]:
-            visited.add(nodes)
-            start = RouteInfo([(self.ids_to_name[start_city_id][0], self.ids_to_name[nodes.finish][0])], [(start_city_id, nodes.finish)], nodes.weight)
-            pri_queue.enqueue(nodes.weight, start)
+            if nodes.finish not in visited:
+                start = RouteInfo([(self.ids_to_name[start_city_id][0], self.ids_to_name[nodes.finish][0])], [(start_city_id, nodes.finish)], nodes.weight)
+                pri_queue.enqueue(nodes.weight, start)
 
-        pri_queue.enqueue(0, start)
 
         
-
         while pri_queue.peek().route_ids[len(pri_queue.peek().route_ids) - 1][1] != destination_id:
             item = pri_queue.heap[1]
             pri_queue.dequeue()
             
             for nodes in self.graph.nodes[item.value.route_ids[len(item.value.route_ids) - 1][1]]:
-                if nodes not in visited:
-                    visited.add(nodes)
-                    cost = nodes.weight + item.value.cost
+                if nodes.finish not in visited:
+
+                    item_copy = deepcopy(item)
+
+                    cost = nodes.weight + item_copy.value.cost
 
                     start_coords = self.ids_to_name[nodes.start][1]
                     finish_coords = self.ids_to_name[nodes.finish][1]
                     potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
-
                     
-                    item.value.route.append((item.value.route[len(item.value.route) - 1][1], self.ids_to_name[nodes.finish][0]))
-                    item.value.route_ids.append((item.value.route_ids[len(item.value.route_ids) - 1][1], nodes.finish))
+                    
+                    item_copy.value.route.append((item_copy.value.route[len(item_copy.value.route) - 1][1], self.ids_to_name[nodes.finish][0]))
+                    item_copy.value.route_ids.append((item_copy.value.route_ids[len(item_copy.value.route_ids) - 1][1], nodes.finish))
                     
 
-                    new_route_info = RouteInfo(deepcopy(item.value.route), deepcopy(item.value.route_ids), cost)
+                    new_route_info = RouteInfo(deepcopy(item_copy.value.route), deepcopy(item_copy.value.route_ids), cost)
                     
                     pri_queue.enqueue(potential_cost + cost, new_route_info)
+            visited.add(item.value.route_ids[len(item.value.route_ids) - 1][1])
 
-                    item.value.route.pop()
-                    item.value.route_ids.pop()
         return pri_queue.peek()
 
