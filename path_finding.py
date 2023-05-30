@@ -51,13 +51,21 @@ class PathFinder:
 
         pri_queue = PriorityQueue()
 
-        start = RouteInfo([self.ids_to_name[start_city_id][0]], [start_city_id], 0)
+        start = RouteInfo([(None, self.ids_to_name[start_city_id][0])], [(None, start_city_id)], 0)
+        
+        for nodes in self.graph.nodes[start_city_id]:
+            start = RouteInfo([(self.ids_to_name[start_city_id][0], self.ids_to_name[nodes.finish][0])], [(start_city_id, nodes.finish)], nodes.weight)
+            pri_queue.enqueue(nodes.weight, start)
 
         pri_queue.enqueue(0, start)
-        while pri_queue.peek().route_ids[len(pri_queue.peek().route_ids) - 1] != destination_id:
+
+        
+
+        while pri_queue.peek().route_ids[len(pri_queue.peek().route_ids) - 1][1] != destination_id:
             item = pri_queue.heap[1]
             pri_queue.dequeue()
-            for nodes in self.graph.nodes[item.value.route_ids[len(item.value.route_ids) - 1]]:
+            
+            for nodes in self.graph.nodes[item.value.route_ids[len(item.value.route_ids) - 1][1]]:
                 cost = nodes.weight + item.priority
 
                 start_coords = self.ids_to_name[nodes.start][1]
@@ -65,8 +73,9 @@ class PathFinder:
                 potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
 
                 
-                item.value.route.append(self.ids_to_name[nodes.finish][0])
-                item.value.route_ids.append(nodes.finish)
+                item.value.route.append((item.value.route[len(item.value.route) - 1][1], self.ids_to_name[nodes.finish][0]))
+                item.value.route_ids.append((item.value.route_ids[len(item.value.route_ids) - 1][1], nodes.finish))
+                
 
                 new_route_info = RouteInfo(deepcopy(item.value.route), deepcopy(item.value.route_ids), cost)
                 
