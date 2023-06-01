@@ -57,10 +57,13 @@ class PathFinder:
             if nodes.finish not in visited:
                 start = RouteInfo([(self.ids_to_name[start_city_id][0], self.ids_to_name[nodes.finish][0])], [(start_city_id, nodes.finish)], nodes.weight)
                 pri_queue.enqueue(nodes.weight, start)
+                if nodes.finish == destination_id:
+                        return start
+
 
 
         
-        while pri_queue.peek().route_ids[len(pri_queue.peek().route_ids) - 1][1] != destination_id:
+        while pri_queue.size() > 0:
             item = pri_queue.heap[1]
             pri_queue.dequeue()
             
@@ -82,10 +85,10 @@ class PathFinder:
 
                     new_route_info = RouteInfo(deepcopy(item_copy.value.route), deepcopy(item_copy.value.route_ids), cost)
 
-                    if new_route_info.route_ids[len(item_copy.value.route_ids) - 1][1] == destination_id:
+                    if nodes.finish == destination_id:
                         return new_route_info
 
                     pri_queue.enqueue(potential_cost + item.priority, new_route_info)
-                    
+
             visited.add(item.value.route_ids[len(item.value.route_ids) - 1][1])
 
