@@ -12,7 +12,7 @@ class RouteInfo:
     def __init__(self, 
                  route: List[Tuple[str, str]], # list of tuples of friendly names for the start and destination cities
                  route_ids: List[Tuple[int, int]], # list of tuples of ids for the start and destination cities
-                 cost: int) -> None: # the total cost of the route from start to destinationf
+                 cost: int) -> None: # the total cost of the route from start to destination
         self.route = route
         self.route_ids = route_ids
         self.cost = cost
@@ -81,9 +81,11 @@ class PathFinder:
                     
 
                     new_route_info = RouteInfo(deepcopy(item_copy.value.route), deepcopy(item_copy.value.route_ids), cost)
-                    
-                    pri_queue.enqueue(potential_cost + cost, new_route_info)
-            visited.add(item.value.route_ids[len(item.value.route_ids) - 1][1])
 
-        return pri_queue.peek()
+                    if new_route_info.route_ids[len(item_copy.value.route_ids) - 1][1] == destination_id:
+                        return new_route_info
+
+                    pri_queue.enqueue(potential_cost + item.priority, new_route_info)
+                    
+            visited.add(item.value.route_ids[len(item.value.route_ids) - 1][1])
 
