@@ -5,7 +5,6 @@ from priority_queue import PriorityQueue
 import L2_adjacency_list_graph
 from L2_adjacency_list_graph import AdjacencyListGraph
 
-from copy import deepcopy
 
 # You do not need to change this class.  It is used as the return type for get_minimum_path
 class RouteInfo:
@@ -32,6 +31,9 @@ class PathFinder:
         self.ids_to_name = {}
         self.name_to_ids = {}
 
+        self.map_data = {}
+        self.previous_nodes = {}
+
     # TODO: adds an edge to the graph, using a the id of the start node and id of the finish node
     def add_edge(self, start_id: int, finish_id:int , cost: float) -> None:
         self.graph.add_edge(start_id, finish_id, cost)
@@ -47,48 +49,57 @@ class PathFinder:
     # Returns a RouteInfo object that contains the edges for the route.  See RouteInfo above for attributes
     # Note: This implementation should use A*.  Tests that should pass 
     def get_minimum_path(self, start_city_id: int, destination_id:int ) -> RouteInfo:
-        visited = set()
-
-        pri_queue = PriorityQueue()
         
+        pri_queue = PriorityQueue()
+        pri_queue.enqueue(0, [start_city_id])
+
+        visited = set()
         visited.add(start_city_id)
 
-        for nodes in self.graph.nodes[start_city_id]:
-            if nodes.finish not in visited:
-                start = RouteInfo([(self.ids_to_name[start_city_id][0], self.ids_to_name[nodes.finish][0])], [(start_city_id, nodes.finish)], nodes.weight)
-                pri_queue.enqueue(nodes.weight, start)
-                if nodes.finish == destination_id:
-                        return start
+        self.map_data[start_city_id] = 0
+        self.previous_nodes[start_city_id] = start_city_id
 
-
-
-        
         while pri_queue.size() > 0:
-            item = pri_queue.heap[1]
-            pri_queue.dequeue()
+            route = pri_queue.dequeue()
             
-            for nodes in self.graph.nodes[item.value.route_ids[len(item.value.route_ids) - 1][1]]:
+            for nodes in self.graph.nodes[route[len(visited) - 1]]:
+
+                # visited.add(nodes.start)
                 if nodes.finish not in visited:
-
-                    item_copy = deepcopy(item)
-
-                    cost = nodes.weight + item_copy.value.cost
 
                     start_coords = self.ids_to_name[nodes.start][1]
                     finish_coords = self.ids_to_name[nodes.finish][1]
-                    potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
+                    potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2)) + nodes.weight
                     
+                    new_cost = self.map_data[nodes.start] + nodes.weight
                     
-                    item_copy.value.route.append((item_copy.value.route[len(item_copy.value.route) - 1][1], self.ids_to_name[nodes.finish][0]))
-                    item_copy.value.route_ids.append((item_copy.value.route_ids[len(item_copy.value.route_ids) - 1][1], nodes.finish))
+                    if self.map_data[nodes.finish] > new_cost:
+                        self.map_data[nodes.finish] = new_cost
+                        self.previous_nodes[nodes.finish] = nodes.start
                     
-
-                    new_route_info = RouteInfo(deepcopy(item_copy.value.route), deepcopy(item_copy.value.route_ids), cost)
+                    # new_route = route[:]
+                    # new_route.append(nodes.finish)
 
                     if nodes.finish == destination_id:
-                        return new_route_info
+                        # return self.route_decoder(new_route)
+                        return self.route_decoder()
+                    pri_queue.enqueue(potential_cost + self.map_data[nodes.start], nodes.finish)
 
-                    pri_queue.enqueue(potential_cost + item.priority, new_route_info)
+            #visited.add(nodes.start)
 
-            visited.add(item.value.route_ids[len(item.value.route_ids) - 1][1])
+    def route_decoder(self, route: List):
+        cost = 0
+        route_names = []
+        route_ids = []
+        for start in range(len(route) - 1):
+            for finish in range(start + 1, len(route)):
+                for nodes in self.graph.nodes[route[start]]:
+                    if nodes.finish == route[finish]:
+                        cost += nodes.weight
+                        route_names.append((self.ids_to_name[route[start]][0], self.ids_to_name[route[finish]][0]))
+                        route_ids.append((route[start], route[finish]))
+                        break
+        route_info = RouteInfo(route_names, route_ids, cost)
+        return route_info
+                    
 
