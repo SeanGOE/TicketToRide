@@ -51,7 +51,7 @@ class PathFinder:
     def get_minimum_path(self, start_city_id: int, destination_id:int ) -> RouteInfo:
         
         pri_queue = PriorityQueue()
-        pri_queue.enqueue(0, [start_city_id])
+        pri_queue.enqueue(0, start_city_id)
 
         visited = set()
         visited.add(start_city_id)
@@ -62,43 +62,44 @@ class PathFinder:
         while pri_queue.size() > 0:
             route = pri_queue.dequeue()
             
-            for nodes in self.graph.nodes[route[len(visited) - 1]]:
-
-                # visited.add(nodes.start)
+            for nodes in self.graph.nodes[route]:
                 if nodes.finish not in visited:
 
                     start_coords = self.ids_to_name[nodes.start][1]
                     finish_coords = self.ids_to_name[nodes.finish][1]
                     potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2)) + nodes.weight
                     
-                    new_cost = self.map_data[nodes.start] + nodes.weight
+                    new_cost = self.map_data[nodes.start] + potential_cost
                     
-                    if self.map_data[nodes.finish] > new_cost:
+                    if self.map_data.get(nodes.finish) == None or new_cost < self.map_data[nodes.finish]:
                         self.map_data[nodes.finish] = new_cost
                         self.previous_nodes[nodes.finish] = nodes.start
                     
-                    # new_route = route[:]
-                    # new_route.append(nodes.finish)
 
                     if nodes.finish == destination_id:
-                        # return self.route_decoder(new_route)
-                        return self.route_decoder()
-                    pri_queue.enqueue(potential_cost + self.map_data[nodes.start], nodes.finish)
+                        return self.route_decoder(start_city_id, destination_id)
+                    pri_queue.enqueue(new_cost, nodes.finish)
 
-            #visited.add(nodes.start)
+            visited.add(route)
+        return None
 
-    def route_decoder(self, route: List):
+    def route_decoder(self, start, finish):
         cost = 0
         route_names = []
         route_ids = []
-        for start in range(len(route) - 1):
-            for finish in range(start + 1, len(route)):
-                for nodes in self.graph.nodes[route[start]]:
-                    if nodes.finish == route[finish]:
-                        cost += nodes.weight
-                        route_names.append((self.ids_to_name[route[start]][0], self.ids_to_name[route[finish]][0]))
-                        route_ids.append((route[start], route[finish]))
-                        break
+
+        while finish != start:
+            old_finish = finish
+            finish = self.previous_nodes[finish]
+            travel = (finish, old_finish)
+            route_ids.insert(0, travel)
+        
+        for start, finish in route_ids:
+            route_names.append((self.ids_to_name[start][0], self.ids_to_name[finish][0]))
+            for nodes in self.graph.nodes[start]:
+                if nodes.finish == finish:
+                    cost += nodes.weight
+
         route_info = RouteInfo(route_names, route_ids, cost)
         return route_info
                     
