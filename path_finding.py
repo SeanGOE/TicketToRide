@@ -37,6 +37,8 @@ class PathFinder:
     # TODO: adds an edge to the graph, using a the id of the start node and id of the finish node
     def add_edge(self, start_id: int, finish_id:int , cost: float) -> None:
         self.graph.add_edge(start_id, finish_id, cost)
+        if self.graph.is_directed == False:
+            self.graph.add_edge(finish_id, start_id, cost)
 
     # TODO: adds a node to the graph, passing in the id, friendly name, and location of the node.
     # location is a tuple with the x and y coordinates of the location
@@ -54,30 +56,32 @@ class PathFinder:
         pri_queue.enqueue(0, start_city_id)
 
         visited = set()
-        visited.add(start_city_id)
 
-        self.map_data[start_city_id] = 0
+        start_coords = self.ids_to_name[start_city_id][1]
+        finish_coords = self.ids_to_name[destination_id][1]
+        potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
+                    
+        self.map_data[start_city_id] = (0, potential_cost)
         self.previous_nodes[start_city_id] = start_city_id
 
         while pri_queue.size() > 0:
             route = pri_queue.dequeue()
+            if route == destination_id:
+                return self.route_decoder(start_city_id, destination_id)
             
             for nodes in self.graph.nodes[route]:
                 if nodes.finish not in visited:
 
-                    start_coords = self.ids_to_name[nodes.start][1]
-                    finish_coords = self.ids_to_name[nodes.finish][1]
-                    potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2)) + nodes.weight
+                    start_coords = self.ids_to_name[nodes.finish][1]
+                    finish_coords = self.ids_to_name[destination_id][1]
+                    potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
                     
-                    new_cost = self.map_data[nodes.start] + potential_cost
+                    new_cost = self.map_data[nodes.start][0] - self.map_data[nodes.start][1] + nodes.weight + potential_cost
                     
-                    if self.map_data.get(nodes.finish) == None or new_cost < self.map_data[nodes.finish]:
-                        self.map_data[nodes.finish] = new_cost
+                    if self.map_data.get(nodes.finish) == None or new_cost < self.map_data[nodes.finish][0]:
+                        self.map_data[nodes.finish] = (new_cost, potential_cost)
                         self.previous_nodes[nodes.finish] = nodes.start
                     
-
-                    if nodes.finish == destination_id:
-                        return self.route_decoder(start_city_id, destination_id)
                     pri_queue.enqueue(new_cost, nodes.finish)
 
             visited.add(route)
@@ -102,5 +106,4 @@ class PathFinder:
 
         route_info = RouteInfo(route_names, route_ids, cost)
         return route_info
-                    
-
+                
