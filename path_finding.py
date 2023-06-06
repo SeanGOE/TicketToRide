@@ -75,7 +75,7 @@ class PathFinder:
                     start_coords = self.ids_to_name[nodes.finish][1]
                     finish_coords = self.ids_to_name[destination_id][1]
                     potential_cost = sqrt(pow((start_coords[0] - finish_coords[0]), 2) + pow((start_coords[1] - finish_coords[1]), 2))
-                    
+                        
                     new_cost = self.map_data[nodes.start][0] - self.map_data[nodes.start][1] + nodes.weight + potential_cost
                     
                     if self.map_data.get(nodes.finish) == None or new_cost < self.map_data.get(nodes.finish)[0]:
@@ -97,11 +97,12 @@ class PathFinder:
             travel = (finish, old_finish)
             route_ids.insert(0, travel)
         
-        for start, finish in route_ids:
-            route_names.append((self.ids_to_name[start][0], self.ids_to_name[finish][0]))
+        for start, end in route_ids:
+            route_names.append((self.ids_to_name[start][0], self.ids_to_name[end][0]))
             for nodes in self.graph.nodes[start]:
-                if nodes.finish == finish:
+                if nodes.finish == end:
                     cost += nodes.weight
+                    break
 
         route_info = RouteInfo(route_names, route_ids, cost)
         return route_info
