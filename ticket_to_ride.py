@@ -6,7 +6,7 @@ from path_finding import PathFinder, RouteInfo
 
 class TicketToRide:
     def __init__(self) -> None:
-        self.path_finder = PathFinder()
+        self.path_finder = PathFinder(False)
         self._load_map_data()
 
     def get_minimum_path_for_ticket(self, start: int, finish: int) -> RouteInfo:
@@ -19,5 +19,8 @@ class TicketToRide:
             for node in path_data["cities"]:
                 self.path_finder.add_node(node["id"], node["name"], node["location"])
 
+
             # TODO: Update load_map_data to load the tracks into your graph
             # Use the example for cities above, and open game_city_locations.json to see the fields for "tracks"
+            for item in path_data["tracks"]:
+                self.path_finder.add_edge(self.path_finder.name_to_ids[item["city_1"]][0], self.path_finder.name_to_ids[item["city_2"]][0], item["distance"])

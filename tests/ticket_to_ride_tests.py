@@ -35,7 +35,7 @@ class TicketToRideTests(TestCase):
         ticket = TicketToRide()
         route_info = ticket.get_minimum_path_for_ticket(33, 15)
         self.assertEquals(23, route_info.cost)
-        self._assert_path(route_info, 33, 15)
+        self._assert_path(route_info, 33, 15) 
 
     def test_half_route(self):
         ticket = TicketToRide()
