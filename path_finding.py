@@ -78,11 +78,10 @@ class PathFinder:
                     
                     new_cost = self.map_data[nodes.start][0] - self.map_data[nodes.start][1] + nodes.weight + potential_cost
                     
-                    if self.map_data.get(nodes.finish) == None or new_cost < self.map_data[nodes.finish][0]:
+                    if self.map_data.get(nodes.finish) == None or new_cost < self.map_data.get(nodes.finish)[0]:
                         self.map_data[nodes.finish] = (new_cost, potential_cost)
                         self.previous_nodes[nodes.finish] = nodes.start
-                    
-                    pri_queue.enqueue(new_cost, nodes.finish)
+                        pri_queue.enqueue(new_cost, nodes.finish)
 
             visited.add(route)
         return None

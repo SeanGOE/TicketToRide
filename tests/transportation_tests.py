@@ -47,5 +47,5 @@ class TransportationTests(TestCase):
         ticket = RoadTrip()
         # East lake high school to Mt Rainer
         route_info = ticket.get_minimum_path_for_ticket(110817474,  512051128)
-        self.assertEquals(176767.8818243295, route_info.cost)
+        self.assertAlmostEquals(176767.8818243295, route_info.cost)
         self._assert_path(route_info, 110817474, 512051128)

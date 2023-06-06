@@ -9,7 +9,7 @@ class AdjacencyListGraph(GraphBaseClass):
     # Make sure your implementation accounts for node order on an edge for directed and is neutral for undirected
     # super sets a property self.is_directed to the parameter value
     def __init__(self, is_directed:bool) -> None:
-        self.nodes:Dict[Set] = dict()
+        self.nodes:Dict[List] = dict()
         super().__init__(is_directed)
     
     # Adds a node named "name" to the graph.
